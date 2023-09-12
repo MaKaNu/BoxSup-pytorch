@@ -129,3 +129,5 @@ dmypy.json
 .pyre/
 profiling_stats.txt
 .prof_stats
+
+.VSCodeCounter

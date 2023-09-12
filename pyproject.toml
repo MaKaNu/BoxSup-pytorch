@@ -40,6 +40,7 @@ beautifulsoup4 = "^4.11.1"
 lxml = "^4.8.0"
 torchmetrics = "^0.10.0"
 toml = "^0.10.2"
+matplotlib = "^3.7.1"
 
 
 [tool.poetry.dev-dependencies]

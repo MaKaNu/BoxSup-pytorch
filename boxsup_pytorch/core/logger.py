@@ -23,12 +23,12 @@ class LoggingHelper:
             with_date (bool, optional): defines if logfile should be generated with startdate.
                 Defaults to False.
         """
-        config_path = Path(__file__).resolve().parent / "config/log_config.toml"
+        config_path = Path(__file__).resolve().parent.parent / "config/log_config.toml"
         self.logging_config = toml.load(config_path)
         if with_date:
-            self.logfile_with_date()
+            self._logfile_with_date()
 
-    def logfile_with_date(self):
+    def _logfile_with_date(self):
         """Replace the original configured logfile with itself plus date."""
         logfile = Path(self.logging_config["handlers"]["file"]["filename"])
         logfile_name = f"{logfile.stem}-{datetime.now().strftime('%Y%m%d-%H%M%S')}.log"

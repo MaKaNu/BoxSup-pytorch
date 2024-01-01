@@ -41,6 +41,7 @@ lxml = "^4.8.0"
 torchmetrics = "^0.10.0"
 toml = "^0.10.2"
 matplotlib = "^3.7.1"
+psutil = "^5.9.5"
 
 
 [tool.poetry.dev-dependencies]
@@ -60,6 +61,8 @@ pep440 = "^0.1.0"
 [tool.poetry.group.dev.dependencies]
 types-pillow = "^9.2.2.2"
 pytest-mock = "^3.10.0"
+pympler = "^1.0.1"
+ipykernel = "^6.25.2"
 
 [tool.black]
 line-length=100

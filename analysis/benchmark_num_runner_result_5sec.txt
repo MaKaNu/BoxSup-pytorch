@@ -1,0 +1,47 @@
+❯ hyperfine "python scripts/benchmark_baseline.py 18 5" "python scripts/benchmark_baseline.py 2 5" "python scripts/benchmark_baseline.py 4 5" "python scripts/benchmark_baseline.py 6 5" "python scripts/benchmark_baseline.py 8 5" "python scripts/benchmark_baseline.py 10 5" "python scripts/benchmark_baseline.py 12 5" "python scripts/benchmark_baseline.py 14 5" "python scripts/benchmark_baseline.py 16 5"
+Benchmark 1: python scripts/benchmark_baseline.py 18 5
+  Time (mean ± σ):     119.980 s ±  1.181 s    [User: 301.152 s, System: 81.134 s]
+  Range (min … max):   118.130 s … 121.852 s    10 runs
+
+Benchmark 2: python scripts/benchmark_baseline.py 2 5
+  Time (mean ± σ):     163.908 s ±  4.377 s    [User: 243.405 s, System: 63.737 s]
+  Range (min … max):   158.240 s … 169.599 s    10 runs
+
+Benchmark 3: python scripts/benchmark_baseline.py 4 5
+  Time (mean ± σ):     119.160 s ±  1.172 s    [User: 281.199 s, System: 72.862 s]
+  Range (min … max):   117.390 s … 121.622 s    10 runs
+
+Benchmark 4: python scripts/benchmark_baseline.py 6 5
+  Time (mean ± σ):     121.080 s ±  0.789 s    [User: 299.963 s, System: 79.159 s]
+  Range (min … max):   120.263 s … 123.085 s    10 runs
+
+Benchmark 5: python scripts/benchmark_baseline.py 8 5
+  Time (mean ± σ):     117.925 s ±  1.333 s    [User: 266.219 s, System: 74.445 s]
+  Range (min … max):   116.106 s … 121.116 s    10 runs
+
+Benchmark 6: python scripts/benchmark_baseline.py 10 5
+  Time (mean ± σ):     117.768 s ±  2.018 s    [User: 257.806 s, System: 73.141 s]
+  Range (min … max):   115.478 s … 120.407 s    10 runs
+
+Benchmark 7: python scripts/benchmark_baseline.py 12 5
+  Time (mean ± σ):     116.027 s ±  0.220 s    [User: 243.668 s, System: 71.453 s]
+  Range (min … max):   115.608 s … 116.445 s    10 runs
+
+Benchmark 8: python scripts/benchmark_baseline.py 14 5
+  Time (mean ± σ):     116.258 s ±  0.479 s    [User: 247.670 s, System: 72.844 s]
+  Range (min … max):   115.798 s … 117.169 s    10 runs
+
+Benchmark 9: python scripts/benchmark_baseline.py 16 5
+  Time (mean ± σ):     116.657 s ±  0.275 s    [User: 257.940 s, System: 74.692 s]
+  Range (min … max):   116.194 s … 116.936 s    10 runs
+
+Summary
+  'python scripts/benchmark_baseline.py 12 5' ran
+    1.00 ± 0.00 times faster than 'python scripts/benchmark_baseline.py 14 5'
+    1.01 ± 0.00 times faster than 'python scripts/benchmark_baseline.py 16 5'
+    1.02 ± 0.02 times faster than 'python scripts/benchmark_baseline.py 10 5'
+    1.02 ± 0.01 times faster than 'python scripts/benchmark_baseline.py 8 5'
+    1.03 ± 0.01 times faster than 'python scripts/benchmark_baseline.py 4 5'
+    1.03 ± 0.01 times faster than 'python scripts/benchmark_baseline.py 18 5'
+    1.04 ± 0.01 times faster than 'python scripts/benchmark_baseline.py 6 5'
+    1.41 ± 0.04 times faster than 'python scripts/benchmark_baseline.py 2 5'

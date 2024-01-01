@@ -7,17 +7,13 @@ homepage = "https://github.com/makanu/boxsup-pytorch"
 description = "The BoxSup-pytorch is an implementation of the BoxSup Algorithm in pytorch. Since the original paper has no available implementation this implementation is only based on the paper. They may be a few differences to the explanations from the paper."
 authors = ["Matti Kaupenjohann <matti.kaupenjohann@fh-dortmund.de>"]
 readme = "README.md"
-license =  "GPLv3"
-classifiers=[
+license = "GPLv3"
+classifiers = [
     'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
     'Natural Language :: English',
-    'Programming Language :: Python :: 3.7',
-    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
 ]
-include = [
-    "LICENSE",
-    "boxsup_pytorch/py.typed"
-]
+include = ["LICENSE", "boxsup_pytorch/py.typed"]
 
 
 [tool.poetry.dependencies]
@@ -28,12 +24,8 @@ Pillow = ">=9.1.0, <10.0.0"
 ninja = "^1.10.2"
 tqdm = "^4.64.0"
 scipy = "^1.8.0"
-torch = [
-    {version = "1.12.1+cu116", source = "pytorch"}
-]
-torchvision = [
-    {version = "0.13.1+cu116", source = "pytorch" }
-]
+torch = [{ version = "1.12.1+cu116", source = "pytorch" }]
+torchvision = [{ version = "0.13.1+cu116", source = "pytorch" }]
 configparser = "^5.2.0"
 alive-progress = "^2.4.1"
 beautifulsoup4 = "^4.11.1"
@@ -43,41 +35,36 @@ toml = "^0.10.2"
 matplotlib = "^3.7.1"
 psutil = "^5.9.5"
 
-
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 mkdocs-material = "^6.1.5"
 pytest = "^6.0"
 pytest-cov = "^2.10.1"
-flake8 = "^3.8.4"
-flake8-docstrings = "1.5.0"
-flake8-import-order = "0.18.1"
-flake8-colors = "0.1.6"
-
+types-pillow = "^9.2.2.2"
+pytest-mock = "^3.10.0"
+pympler = "^1.0.1"
+ipykernel = "^6.25.2"
+flake8 = ">=5.0.0"
+flake8-docstrings = ">=1.7.0"
+flake8-import-order = "0.18.2"
+flake8-colors = ">=0.1.9"
 black = "22.3.0"
 mypy = "0.950"
 yamllint = "^1.25.0"
 pep440 = "^0.1.0"
 
-[tool.poetry.group.dev.dependencies]
-types-pillow = "^9.2.2.2"
-pytest-mock = "^3.10.0"
-pympler = "^1.0.1"
-ipykernel = "^6.25.2"
-
 [tool.black]
-line-length=100
+line-length = 100
 
 [[tool.poetry.source]]
 name = "pytorch"
 url = "https://download.pytorch.org/whl/cu116/"
-secondary = true
-default = false
+priority = "supplemental"
 
 [tool.pylint.reports]
-output-format="colorized"
-reports="y"
-include-ids="yes"
-msg-template="{msg_id}:{line:3d},{column}: {obj}: {msg}"
+output-format = "colorized"
+reports = "y"
+include-ids = "yes"
+msg-template = "{msg_id}:{line:3d},{column}: {obj}: {msg}"
 
 [tool.pytest.ini_options]
 addopts = "--cov=boxsup_pytorch --cov-branch --cov-report term-missing  -vv --color=yes --cov-fail-under 80"

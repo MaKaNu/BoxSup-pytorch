@@ -166,6 +166,31 @@ class BoxSupDatasetUpdateNet(BoxSupBaseDataset):
 
         if self.transform:
             image = self.transform(image)
+class BoxSupDatasetUpdateIOU(BoxSupBaseDataset):
+    """The BoxSupDataset Class for Update Mask."""
+
+    def __getitem__(self, index: int) -> Tuple[Tensor, Tensor, str]:
+        """Return One Sample as Tuple of Dataset.
+
+        The Tuple for this dataset includes all data necessary for IoU Calculation.
+
+        Args:
+            index (int): index of the Sample
+
+        Returns:
+            Tuple[Tensor, Tensor, str]: _description_
+        """
+        masks_path = self.root / f"MCG_processed/{self.file_stems[index]}.npz"
+        masks = torch.from_numpy(np.load(masks_path)["masks"])
+        bbox_path = self.root / f"Annotations/{self.file_stems[index]}.xml"
+        bbox_dict = self.parse_voc_xml(ET_parse(bbox_path).getroot())
+        bboxes = self._generate_mask_from_dict(bbox_dict)
+
+        if self.target_transform:
+            masks = self.target_transform(masks)
+            bboxes = self.target_transform(bboxes)
+
+        return masks, bboxes, self.file_stems[index]
         if self.target_transform:
             gt_label = self.target_transform(gt_label)
 

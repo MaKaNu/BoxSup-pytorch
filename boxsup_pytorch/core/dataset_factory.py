@@ -3,9 +3,9 @@
 copyright Matti Kaupenjohann, 2022
 """
 
-
 from boxsup_pytorch.data.dataset import (
     BoxSupDatasetAll,
+    BoxSupDatasetUpdateIOU,
     BoxSupDatasetUpdateMask,
     BoxSupDatasetUpdateNet,
 )
@@ -49,3 +49,4 @@ dataset_factory = DatasetFactory()
 dataset_factory.register_dataset("ALL", BoxSupDatasetAll)
 dataset_factory.register_dataset("MASK", BoxSupDatasetUpdateMask)
 dataset_factory.register_dataset("NET", BoxSupDatasetUpdateNet)
+dataset_factory.register_dataset("IOU", BoxSupDatasetUpdateIOU)

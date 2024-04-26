@@ -20,18 +20,19 @@ from boxsup_pytorch.core.dataset_factory import dataset_factory
 class BoxSupDataloader:
     """BoxSup initiate training class."""
 
-    def __init__(self, type: str) -> None:
+    def __init__(self, variant: str) -> None:
         """Initialize instance of BoxSupDataloader.
 
         Args:
-            type (str): defines which kind of dataloader should be initilaized
+            variant (str): defines which kind of dataloader should be initilaized
                 options: ["ALL", "NET", "MASK", "IOU"]
 
         Raises:
-            ValueError: raised if invalid/not implemented type
+            ValueError: raised if invalid/not implemented variant
         """
-        if type not in ["ALL", "NET", "MASK", "IOU"]:
-            raise ValueError(f"type {type} is not correct, allowed is 'ALL', 'NET', 'MASK', 'IOU'")
+        allowed_variants = ["ALL", "NET", "MASK", "IOU"]
+        if variant not in allowed_variants:
+            raise ValueError(f"variant {variant} is not correct, allowed is {allowed_variants}")
         self.dataset_root = GLOBAL_CONFIG.root
         self.image_size = GLOBAL_CONFIG.image_size
         dataset_mean_file = self.dataset_root / "ImageSets/BoxSup/mean_std.yml"
@@ -57,15 +58,15 @@ class BoxSupDataloader:
             ]
         )
 
-        self.train_dataset = dataset_factory.get_dataset(type)(
+        self.train_dataset = dataset_factory.get_dataset(variant)(
             self.dataset_root,
-            type="train",
+            variant="train",
             transform=self.transform,
             target_transform=self.target_transform,
         )
-        self.val_dataset = dataset_factory.get_dataset(type)(
+        self.val_dataset = dataset_factory.get_dataset(variant)(
             self.dataset_root,
-            type="val",
+            variant="val",
             transform=self.transform,
             target_transform=self.target_transform,
         )
@@ -81,7 +82,7 @@ class BoxSupDataloader:
 
         dataloaders = {
             # TODO: Use Dataloader for testing purposes instead of MultiEpochsDataloader
-            x.type: DataLoader(x, batch_size=batch_size, shuffle=True, num_workers=num_workers)
+            x.variant: DataLoader(x, batch_size=batch_size, shuffle=True, num_workers=num_workers)
             for x in [self.train_dataset, self.val_dataset]
         }
         return dataloaders
@@ -92,7 +93,7 @@ class BoxSupDataloader:
         Returns:
             Dict[str, int]: dataset size dict
         """
-        return {x.type: len(x) for x in [self.train_dataset, self.val_dataset]}
+        return {x.variant: len(x) for x in [self.train_dataset, self.val_dataset]}
 
     def get_class_names(self) -> Dict[str, Dict[str, int]]:
         """Return dict for train/val with class mapping to int.
@@ -100,7 +101,7 @@ class BoxSupDataloader:
         Returns:
             Dict[str, Dict[str, int]]: class mapping dict
         """
-        return {x.type: x.classes for x in [self.train_dataset, self.val_dataset]}
+        return {x.variant: x.classes for x in [self.train_dataset, self.val_dataset]}
 
 
 class MultiEpochsDataLoader(DataLoader):

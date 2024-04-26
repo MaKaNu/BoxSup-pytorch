@@ -15,6 +15,9 @@ classifiers = [
 ]
 include = ["LICENSE", "boxsup_pytorch/py.typed"]
 
+[tool.poetry.scripts]
+boxsup_pytorch = "boxsup_pytorch.__main__:run_script"
+
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.10"

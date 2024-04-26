@@ -1,8 +1,9 @@
 title = "TOML Config File of BoxSup Package"
 
 [DATASET]
-dataset = "pascal"
+dataset = "pascal2012"
 root = "/mnt/data1/datasets/image/voc/VOCdevkit/VOC2012/"
+num_classes = 20
 
 [DATASET.count]
 # examined by 'cat <DATASETROOT>/ImageSets/BoxSup/train.txt'
@@ -17,9 +18,13 @@ mcg_path = "MCG"
 rerun_process = false
 
 [TRAINER]
-batchsize = 20
+batchsize = 4
 epochs = 80
+num_iter = 20
 optimizer = "ADAM"
+image_size = 224
+# Guideline: https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813 
+num_worker = 18
 
 [HYPER]
 # COMMON
@@ -32,3 +37,7 @@ momentum = 0.9
 # StepLR
 step_size = 7
 gamma = 0.1
+
+[MASKS]
+# Options: ["GREEDY", "MINMAX"]
+strat = "GREEDY"

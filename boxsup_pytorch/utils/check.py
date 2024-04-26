@@ -1,6 +1,8 @@
 """Module with specific assert and error messages."""
+
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Tuple
 
 
@@ -29,6 +31,19 @@ def check_exists_msg(value: str) -> str:
         str: assert message
     """
     message = f"Inputattribute '{value}' for Pipeline Process is not set!"
+    return message
+
+
+def check_path_exists_msg(value: Path) -> str:
+    """Create message with value as path which doesn't exists.
+
+    Args:
+        value (str): Path which doesn't exists.
+
+    Returns:
+        str: Combined ErrorMessage.
+    """
+    message = f"Path '{value}' does not exists!"
     return message
 
 

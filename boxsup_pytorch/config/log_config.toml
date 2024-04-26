@@ -1,0 +1,62 @@
+# TOML Logging Config
+
+# based on:
+# https://stackoverflow.com/questions/7507825
+
+
+# Always 1. Schema versioning may be added in a future release of logging
+version = 1
+
+[formatters.standard]
+# class is always "logging.Formatter"
+class = "logging.Formatter"
+# Optional: logging output format
+format = "%(asctime)s\t%(levelname)s\t%(filename)s\t%(message)s"
+# Optional: asctime format
+datefmt = "%Y-%m-%d %H:%M:%S"
+
+[formatters.train]
+# class is always "logging.Formatter"
+class = "logging.Formatter"
+# Optional: logging output format
+format = "%(asctime)s:\t%(message)s"
+# Optional: asctime format
+datefmt = "%Y-%m-%d %H:%M:%S"
+
+
+[handlers]
+  
+[handlers.console]
+class = "logging.StreamHandler"
+formatter = "standard"
+level = "DEBUG"
+stream = "ext://sys.stdout"
+
+[handlers.console_train]
+class = "logging.StreamHandler"
+formatter = "train"
+level = "DEBUG"
+stream = "ext://sys.stdout"
+  
+[handlers.file]
+class = "logging.handlers.RotatingFileHandler"
+formatter = "standard"
+filename = "logs/boxsup_pytorch.log"
+mode = "a"
+encoding = "utf-8"
+maxBytes = 32768
+backupCount = 3
+
+[loggers.general]
+handlers = ["console", "file"]
+level = "DEBUG"
+propagate = false
+
+[loggers.train]
+handlers = ["console_train", "file"]
+level = "INFO"
+propagate = false
+
+[root]
+level = "INFO"
+handlers = ["console","file"]

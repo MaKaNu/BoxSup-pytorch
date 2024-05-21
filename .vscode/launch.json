@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Python: Aktuelle Datei",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "cwd": "${workspaceFolder}",
@@ -15,13 +15,16 @@
         },
         {
             "name": "Python: Debug mean calc",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/scripts/calculate_mean_std_dataset.py",
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--dataset", "pascal2012"]
-        }
+            "args": [
+                "--dataset",
+                "pascal2012"
+            ]
+        },
     ]
 }

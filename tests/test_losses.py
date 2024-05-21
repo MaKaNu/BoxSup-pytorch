@@ -5,8 +5,6 @@ import torch
 
 from boxsup_pytorch.utils.losses import Losses
 
-torch.manual_seed(42)
-
 cands_classes_fresh = torch.tensor(
     [
         [[1.0, 1.0, 1.0], [2.0, 2.0, 2.0]],
@@ -34,6 +32,19 @@ bbox_classes_real = torch.tensor(
     ]
 )
 
+ious = torch.tensor(
+    [
+        [[0.1, 0.1, 0.8], [0.2, 0.6, 0.2]],
+        [[0.1, 0.1, 0.8], [0.2, 0.6, 0.2]],
+        [[0.1, 0.1, 0.8], [0.2, 0.6, 0.2]],
+        [[0.1, 0.1, 0.8], [0.2, 0.6, 0.2]],
+    ]
+)
+
+# EXPECTED VALUES
+""" We compare every value of `cands_classes_fresh` against the first set BBoxes.
+We have two groups of cands for each
+"""
 expected_all_true = torch.tensor([[True, True, True], [True, True, True]])
 expected_first_true = torch.tensor([[True, True, True], [False, False, False]])
 expected_second_true = torch.tensor([[False, False, False], [True, True, True]])
@@ -41,6 +52,15 @@ expected_mixed_scn0 = torch.tensor([[True, False, False], [True, False, False]])
 expected_mixed_scn1 = torch.tensor([[False, True, False], [False, False, False]])
 expected_mixed_scn2 = torch.tensor([[False, True, True], [False, True, True]])
 expected_mixed_scn3 = torch.tensor([[True, True, False], [True, True, False]])
+
+expected_overlapping = torch.tensor(
+    [
+        [0.8500, 0.6500, 0.5000],
+        [0.9000, 0.9000, 0.2000],
+        [0.8000, 0.4000, 0.8000],
+        [0.8000, 0.4000, 0.8000],
+    ]
+)
 
 
 class TestLossesClassCompareLabels:
@@ -124,7 +144,7 @@ class TestLossesClassCompareLabels:
         ),
         ids=["not_initialized_cands", "initialized_cands", "trained_cands"],
     )
-    def test_compare_labels_zero_elements(
+    def test_compare_labels(
         self,
         cands_classes,
         bbox_classes,
@@ -135,10 +155,7 @@ class TestLossesClassCompareLabels:
         exp_scn2,
         exp_scn3,
     ):
-        """Test against cands all zeros.
-
-        cands_classes
-        """
+        """Parametrized test for Class TestLossesClassCompareLabels."""
         losses = Losses()
 
         result = losses._compare_labels(cands_classes, bbox_classes)
@@ -149,3 +166,41 @@ class TestLossesClassCompareLabels:
         assert torch.all(result[1] == exp_scn1)
         assert torch.all(result[2] == exp_scn2)
         assert torch.all(result[3] == exp_scn3)
+
+
+class TestLossesOverlappingLoss:
+    """Test batch_overlapping loss method of Losses class.
+
+    We implement 1 test to test the calculation of overlapping loss based on same data as the test
+    for compare class.
+
+    Test1:
+    This is the Test which analyzes the result of running the compare against not initialized cands.
+    This is something what actual needed to be avoided and might be replaced with raising an Error.
+
+    Test2:
+    This tests the fresh scenario. We have prepared 4 Batches of Data with a Size of 2 x 3.
+    So speaking of 2 possible BBoxes and 3 candidate Masks each initilaized the same class.
+    The 4 Batches represent themself 4 different scenarios.
+        Scenario 0:
+        The Cands are the same class as the bboxes.
+        Scenario 1:
+    """
+
+    @pytest.mark.parametrize(
+        "iou, bbox_classes, cands_classes",
+        [
+            pytest.param(
+                (ious),
+                (cands_classes_fresh),
+                (bbox_classes_real),
+            )
+        ],
+        ids=["Simple Overlapping"],
+    )
+    def test_overlapping_loss(self, iou, bbox_classes, cands_classes):
+        """Parametrized test for Class TestLossesOverlappingLoss."""
+        losses = Losses()
+
+        result = losses.batch_overlapping_loss(iou, bbox_classes, cands_classes)
+        assert result

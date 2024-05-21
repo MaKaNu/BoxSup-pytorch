@@ -35,6 +35,7 @@ class FCN8s(nn.Module):
             if aux
             else ["head", "score_pool3", "score_pool4"],
         )
+        self.to(self.device)
 
     def forward(self, x):
         pool3 = self.pool3(x)

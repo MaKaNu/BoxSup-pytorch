@@ -2,6 +2,7 @@
 
 from importlib_metadata import PackageNotFoundError, version
 
+
 __author__ = "Matti Kaupenjohann"
 __email__ = "matti.kaupenjohann@fh-dortmund.de"
 

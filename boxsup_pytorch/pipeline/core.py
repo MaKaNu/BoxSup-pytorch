@@ -1,21 +1,34 @@
 """Pipeline core module."""
+
 from __future__ import annotations
 
 from typing import Dict, List, Optional, Protocol, runtime_checkable
 
 from PIL.Image import Image
-from torch import Tensor
+from torch import nn, Tensor
 
-GLOBAL_PIPELINE_CONFIG: List[PipelineProcess | Pipeline] = [
-    PreProcessMCG,
-    UpdateMasks,
-    UpdateNet
-]
+from boxsup_pytorch.data.dataloader import BoxSupDataloader
 
 
 @runtime_checkable
 class PipelineProcess(Protocol):
-    """Process of a Pipeline."""
+    """Process of a Pipeline which follows logic."""
+
+    network: nn.Module
+    dataloader: BoxSupDataloader
+
+    def update_logic(self, **kwargs) -> nn.Module:
+        """Run the Update to follow the logic.
+
+        Args:
+            network (nn.Module): Every process is network bound so the network is mandatory.
+        """
+        ...
+
+
+@runtime_checkable
+class PipelineDataProcess(Protocol):
+    """Process of a Pipeline which follows data."""
 
     def update(self):
         """Update the internal data."""
@@ -30,11 +43,10 @@ class PipelineProcess(Protocol):
         ...  # pragma: no cover
 
 
-class Pipeline():
+class DataPipeline:
     """Pipeline class wich is able to run the PipelineProcesses with specified input."""
 
-    def __init__(self, input,
-                 config: List[PipelineProcess | Pipeline] = GLOBAL_PIPELINE_CONFIG) -> None:
+    def __init__(self, input, config: List[PipelineDataProcess | DataPipeline]) -> None:
         """Initialze Class Pipeline.
 
         Args:
@@ -45,11 +57,12 @@ class Pipeline():
         self.config = config
         self._get_process_inputs(config[0])
         self.input = input
+        self.input_names = []
 
     def run(self):
         """Run the Pipeline itarative."""
         pass
 
-    def _get_process_inputs(self, process: PipelineProcess | Pipeline):
-        inputs = [attr for attr in process.__dict__.keys() if attr.startswith('in_')]
+    def _get_process_inputs(self, process: PipelineDataProcess | DataPipeline):
+        inputs = [attr for attr in process.__dict__.keys() if attr.startswith("in_")]
         self.input_names = inputs

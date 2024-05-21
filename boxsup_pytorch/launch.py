@@ -1,4 +1,5 @@
 """Main module."""
+
 import logging
 
 import torch
@@ -26,7 +27,7 @@ def main():
     # Specify the device the network is running on
     if torch.cuda.is_available():
         cudnn.benchmark = True
-        device = torch.device("cuda")
+        device = torch.device("cuda:1")
     else:
         device = torch.device("cpu")
 

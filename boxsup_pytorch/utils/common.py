@@ -54,3 +54,33 @@ def print_progress_bar(step, total_steps, bar_width=80, title="", print_perc=Tru
 
 def get_larger(previous_value, value):
     return previous_value if value < previous_value else value
+
+
+def squash_mask_layer(mask_layers: Tensor, label: Tensor) -> Tensor:
+    if len(mask_layers.shape) != 3:
+        raise RuntimeError("Mask layer tensor has not the expected shape")
+    if mask_layers.shape[0] == 1:
+        return mask_layers * label
+    cumsum_mask = mask_layers.cumsum(dim=0)
+    valid_mask = ~(cumsum_mask / cumsum_mask).nan_to_num().bool()
+    first_mask = mask_layers[0, :, :]
+    follow_masks = mask_layers[1:, :, :]
+    follow_masks_cut = follow_masks * valid_mask[:-1, :, :]
+    first_mask = (first_mask * label[0, :, :]).unsqueeze(0)
+    follow_masks_cut = follow_masks_cut * label[1:, :, :]
+    return torch.cat([first_mask, follow_masks_cut]).sum(0)
+
+
+def squash_mask_layer2(mask_layers: Tensor, label: Tensor) -> Tensor:
+    if len(mask_layers.shape) != 3:
+        raise RuntimeError("Mask layer tensor has not the expected shape")
+    if mask_layers.shape[0] == 1:
+        return mask_layers * label
+    inverted_mask_layers = mask_layers == 0
+    valid_mask = inverted_mask_layers.cumprod(dim=0)
+    first_mask = mask_layers[0, :, :]
+    follow_masks = mask_layers[1:, :, :]
+    follow_masks_cut = follow_masks * valid_mask[:-1, :, :]
+    first_mask = (first_mask * label[0, :, :]).unsqueeze(0)
+    follow_masks_cut = follow_masks_cut * label[1:, :, :]
+    return torch.cat([first_mask, follow_masks_cut]).sum(0)

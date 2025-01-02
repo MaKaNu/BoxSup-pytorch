@@ -1,10 +1,14 @@
 import sys
 
+import torch
+from torch import Tensor
+
 
 def counter(fn):
     def _counted(*largs, **kargs):
         _counted.invocations += 1
         return fn(*largs, **kargs)
+
     _counted.invocations = 0
     return _counted
 
@@ -21,10 +25,10 @@ def print_progress_bar(step, total_steps, bar_width=80, title="", print_perc=Tru
     perc = 100 * float(step) / float(total_steps)
     max_ticks = bar_width * 8
     num_ticks = int(round(perc / 100 * max_ticks))
-    full_ticks = num_ticks / 8      # Number of full blocks
-    part_ticks = num_ticks % 8      # Size of partial block (array index)
+    full_ticks = num_ticks / 8  # Number of full blocks
+    part_ticks = num_ticks % 8  # Size of partial block (array index)
 
-    disp = bar = ""                 # Blank out variables
+    disp = bar = ""  # Blank out variables
     bar += utf_8s[0] * int(full_ticks)  # Add full blocks into Progress Bar
 
     # If part_ticks is zero, then no partial block, else append part char
@@ -32,19 +36,19 @@ def print_progress_bar(step, total_steps, bar_width=80, title="", print_perc=Tru
         bar += utf_8s[part_ticks]
 
     # Pad Progress Bar with fill character
-    bar += "▒" * int((max_ticks/8 - float(num_ticks)/8.0))
+    bar += "▒" * int((max_ticks / 8 - float(num_ticks) / 8.0))
 
     if len(title) > 0:
-        disp = title + ": "         # Optional title to progress display
+        disp = title + ": "  # Optional title to progress display
 
     # Print progress bar in green: https://stackoverflow.com/a/21786287/6929343
-    disp += "\x1b[0;32m"            # Color Green
-    disp += bar                     # Progress bar to progress display
-    disp += "\x1b[0m"               # Color Reset
+    disp += "\x1b[0;32m"  # Color Green
+    disp += bar  # Progress bar to progress display
+    disp += "\x1b[0m"  # Color Reset
     if print_perc:
         # If requested, append percentage complete to progress display
         if perc > 100.0:
-            perc = 100.0            # Fix "100.04 %" rounding error
+            perc = 100.0  # Fix "100.04 %" rounding error
         disp += " {:6.2f}".format(perc) + " %"
 
     # Output to terminal repetitively over the same line using '\r'.

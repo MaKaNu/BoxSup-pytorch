@@ -14,6 +14,7 @@ from boxsup_pytorch.data.datacontainer import MaskDataContainer
 from boxsup_pytorch.model import network
 from boxsup_pytorch.pipeline.error_calc import ErrorCalc
 from boxsup_pytorch.utils.check import check_init_msg
+from boxsup_pytorch.utils.common import squash_mask_layer
 from boxsup_pytorch.utils.losses import Losses
 
 
@@ -67,6 +68,7 @@ class BaseStrat(ABC):
 
         return sorted_loss_idx
 
+    # TODO REMOVE SOON
     def _reduce_masks(self, stacked_masks):
         def first_nonzero(x, axis=0):
             nonz = x > 0
@@ -77,6 +79,23 @@ class BaseStrat(ABC):
         target = torch.zeros_like(stacked_masks)
         target[mask] = stacked_masks[mask]
         return target.sum(dim=0)
+
+    # TODO REMOVE SOON
+    def _reduce_masks2(self, stacked_masks):
+        if stacked_masks.shape[0] == 1:
+            return stacked_masks
+
+        old_non_mask = torch.ones_like(stacked_masks[0])
+        merged_masks = []
+        for idx, mask in enumerate(stacked_masks):
+            non_mask = (mask == 0) * old_non_mask
+            if not idx:
+                merged_masks.append(mask)
+                continue
+            merged_masks.append(mask * old_non_mask)
+            old_non_mask = non_mask
+
+        return torch.stack(merged_masks).sum(0)
 
 
 @dataclass
@@ -93,32 +112,36 @@ class GreedyStrat(BaseStrat):
 
         selected_masks = []
         for idx, batch in enumerate(data.bbox_cls):
-            bbox_idx = batch.nonzero()
-            selected_masks_idx = sorted_loss_idx[idx, bbox_idx][:, :, 0]
-            stacked_labelmasks = data.masks[idx][selected_masks_idx].squeeze()
-            label_mask = self._reduce_masks(stacked_labelmasks)
+            batch_masks = data.masks[idx]
+            width, height = batch_masks.shape[1:]
+
+            # Select valid bboxes and get bbox class
+            bbox_idx = batch.nonzero().squeeze()
+            bbox_classes = batch[bbox_idx]
+
+            if bbox_idx.shape:
+                selected_masks_idx = sorted_loss_idx[idx, bbox_idx][:, 0]
+                stacked_labelmasks = batch_masks[selected_masks_idx]
+                num_masks = stacked_labelmasks.shape[0]
+                exp_bbox_classes = bbox_classes[:, None, None].expand(num_masks, width, height)
+            else:
+                selected_masks_idx = sorted_loss_idx[idx, bbox_idx][0]
+                num_masks = 1
+                stacked_labelmasks = batch_masks[selected_masks_idx].reshape(
+                    [num_masks, width, height]
+                )
+                exp_bbox_classes = bbox_classes.unsqueeze(0)[:, None, None].expand(
+                    num_masks, width, height
+                )
+
+            # Reduce all masks to single mask for training
+            label_mask = squash_mask_layer(stacked_labelmasks, exp_bbox_classes)
             selected_masks.append(label_mask)
-        # selected_idx = torch.argmin(weighted_loss)
-        # stacked_labelmasks = torch.zeros(self.in_bboxes.shape)
-        # selected_mask = self.in_masks[selected_idx]
-        # class_of_bbox = torch.max(self.in_bboxes[bbox_idx])
-        # zero_mask = selected_mask != 0
-        # stacked_labelmasks[bbox_idx, zero_mask] = (
-        #    selected_mask[zero_mask] / selected_mask[zero_mask] * class_of_bbox
-        # )
-        self.out_labelmask = self._reduce_masks(stacked_labelmasks)
+
+        # TODO implement the following
+        # save_training_data for update of Network
 
         return network
-
-    def unvectorized_selection(self, loss, data):
-        masks_size = data.masks.shape[2:4]
-        already_selected_cand = []
-        for idx in range(data.bbox_cls.shape[1]):
-            bbox_batch = data.bbox_cls[:, [idx]]
-            if (bbox_batch == 0).all():
-                break
-            min_loss_index = loss.argmin(dim=2)[:, [idx], None, None].expand((-1, -1) + masks_size)
-            already_selected_cand.append(min_loss_index)
 
 
 @dataclass
